@@ -1,18 +1,14 @@
 package cmd
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
@@ -183,44 +179,46 @@ type GitHubTag struct {
 	} `json:"object"`
 }
 
+// 取消了git版本检测
 func getGitVersion() (string, error) {
-	resp, err := http.Get(versionLink)
-	if err != nil {
-		return "", err
-	}
-
-	defer resp.Body.Close()
-	// if error, no op
-	if resp != nil && resp.StatusCode == 200 {
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
-		release := &GitHubRelease{}
-		if err := json.Unmarshal(buf.Bytes(), release); err != nil {
-			return "", err
-		}
-
-		respTag, _ := http.Get(versionTagLink + release.TagName)
-		defer resp.Body.Close()
-		// if error, no op
-		if respTag != nil && respTag.StatusCode == 200 {
-			buf.Reset()
-			buf.ReadFrom(respTag.Body)
-
-			releaseTag := &GitHubTag{}
-			if err := json.Unmarshal(buf.Bytes(), releaseTag); err != nil {
-				return "", err
-			}
-			commit := strings.Split(VersionWrapDump, "-")
-
-			if releaseTag.DATA.SHA[:8] != commit[1] {
-				warnMsg := fmt.Sprintf("Warning: Using outdated version. Redownload to upgrade to %s\n", release.TagName)
-				fmt.Fprintf(os.Stderr, color.RedString(warnMsg))
-				return release.TagName, fmt.Errorf(warnMsg)
-			}
-			return release.TagName, nil
-		}
-	}
-	return "", fmt.Errorf("could not fetch version")
+	return "", nil
+	// resp, err := http.Get(versionLink)
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// defer resp.Body.Close()
+	// // if error, no op
+	// if resp != nil && resp.StatusCode == 200 {
+	// 	buf := new(bytes.Buffer)
+	// 	buf.ReadFrom(resp.Body)
+	// 	release := &GitHubRelease{}
+	// 	if err := json.Unmarshal(buf.Bytes(), release); err != nil {
+	// 		return "", err
+	// 	}
+	//
+	// 	respTag, _ := http.Get(versionTagLink + release.TagName)
+	// 	defer resp.Body.Close()
+	// 	// if error, no op
+	// 	if respTag != nil && respTag.StatusCode == 200 {
+	// 		buf.Reset()
+	// 		buf.ReadFrom(respTag.Body)
+	//
+	// 		releaseTag := &GitHubTag{}
+	// 		if err := json.Unmarshal(buf.Bytes(), releaseTag); err != nil {
+	// 			return "", err
+	// 		}
+	// 		commit := strings.Split(VersionWrapDump, "-")
+	//
+	// 		if releaseTag.DATA.SHA[:8] != commit[1] {
+	// 			warnMsg := fmt.Sprintf("Warning: Using outdated version. Redownload to upgrade to %s\n", release.TagName)
+	// 			fmt.Fprintf(os.Stderr, color.RedString(warnMsg))
+	// 			return release.TagName, fmt.Errorf(warnMsg)
+	// 		}
+	// 		return release.TagName, nil
+	// 	}
+	// }
+	// return "", fmt.Errorf("could not fetch version")
 }
 
 // Execute kicks off the tronctl CLI
@@ -231,8 +229,8 @@ func Execute() {
 			VersionWrapDump += ":" + tag
 		}
 		errMsg := errors.Wrapf(err, "commit: %s, error", VersionWrapDump).Error()
-		fmt.Fprintf(os.Stderr, errMsg+"\n")
-		fmt.Fprintf(os.Stderr, "try adding a `--help` flag\n")
+		_, _ = fmt.Fprintf(os.Stderr, errMsg+"\n")
+		_, _ = fmt.Fprintf(os.Stderr, "try adding a `--help` flag\n")
 		os.Exit(1)
 	}
 }
@@ -279,7 +277,7 @@ func getPassphrase() (string, error) {
 		if _, err := os.Stat(passphraseFilePath); os.IsNotExist(err) {
 			return "", fmt.Errorf("passphrase file not found at `%s`", passphraseFilePath)
 		}
-		dat, err := ioutil.ReadFile(passphraseFilePath)
+		dat, err := os.ReadFile(passphraseFilePath)
 		if err != nil {
 			return "", err
 		}
@@ -305,7 +303,7 @@ func getPassphraseWithConfirm() (string, error) {
 		if _, err := os.Stat(passphraseFilePath); os.IsNotExist(err) {
 			return "", fmt.Errorf("passphrase file not found at `%s`", passphraseFilePath)
 		}
-		dat, err := ioutil.ReadFile(passphraseFilePath)
+		dat, err := os.ReadFile(passphraseFilePath)
 		if err != nil {
 			return "", err
 		}
