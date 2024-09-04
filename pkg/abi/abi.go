@@ -10,11 +10,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bizvip/gotron/pkg/address"
-	"github.com/bizvip/gotron/pkg/proto/core"
 	eABI "github.com/ethereum/go-ethereum/accounts/abi"
 	eCommon "github.com/ethereum/go-ethereum/common"
 	"golang.org/x/crypto/sha3"
+
+	"github.com/bizvip/gotron/pkg/address"
+	"github.com/bizvip/gotron/pkg/proto/core"
 )
 
 // Param list

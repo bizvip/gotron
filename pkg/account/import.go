@@ -11,12 +11,13 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 
+	"github.com/btcsuite/btcd/btcec/v2"
+	mapset "github.com/deckarep/golang-set"
+
 	"github.com/bizvip/gotron/pkg/common"
 	"github.com/bizvip/gotron/pkg/keystore"
 	"github.com/bizvip/gotron/pkg/mnemonic"
 	"github.com/bizvip/gotron/pkg/store"
-	"github.com/btcsuite/btcd/btcec/v2"
-	mapset "github.com/deckarep/golang-set"
 )
 
 // ImportFromPrivateKey allows import of an ECDSA private key

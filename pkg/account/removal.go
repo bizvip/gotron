@@ -5,9 +5,10 @@ import (
 	"os"
 	"path"
 
+	"github.com/mitchellh/go-homedir"
+
 	"github.com/bizvip/gotron/pkg/common"
 	"github.com/bizvip/gotron/pkg/store"
-	"github.com/mitchellh/go-homedir"
 )
 
 // RemoveAccount - removes an account from the keystore
